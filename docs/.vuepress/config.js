@@ -2,7 +2,7 @@ import { defineUserConfig } from 'vuepress'
 import { defaultTheme } from '@vuepress/theme-default'
 
 export default defineUserConfig({
-  base: '/',
+  base: '/vue3-scaffolding-tutorial/',
   lang: 'zh-CN',
   title: '从0到1搭建企业级vue3脚手架',
   description: '从“空文件夹”手把手教你搭建企业级vue3脚手架',

@@ -1,5 +1,6 @@
 import { defineUserConfig } from 'vuepress'
 import { defaultTheme } from '@vuepress/theme-default'
+import { googleAnalyticsPlugin } from '@vuepress/plugin-google-analytics'
 
 export default defineUserConfig({
   base: '/vue3-scaffolding-tutorial/',
@@ -11,7 +12,9 @@ export default defineUserConfig({
     ["meta", { name: "author", content: "haibin" }],
   ],
   plugins: [
-    // "@vuepress/active-header-links",
+    googleAnalyticsPlugin({
+      id: 'G-TC06K7PL52'
+    }),
   ],
   markdown: {
     lineNumbers: true,

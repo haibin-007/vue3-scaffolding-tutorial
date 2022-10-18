@@ -1,8 +1,13 @@
 import { defineUserConfig } from 'vuepress'
 import { defaultTheme } from '@vuepress/theme-default'
 import { googleAnalyticsPlugin } from '@vuepress/plugin-google-analytics'
+import { docsearchPlugin } from '@vuepress/plugin-docsearch'
+
 
 export default defineUserConfig({
+  host: '0.0.0.0',
+  port: 8080,
+  open: false,
   base: '/vue3-scaffolding-tutorial/',
   lang: 'zh-CN',
   title: '从0到1搭建企业级vue3脚手架',
@@ -10,28 +15,40 @@ export default defineUserConfig({
   head: [
     ["meta", { name: "keywords", content: "vue3, 脚手架" }],
     ["meta", { name: "author", content: "haibin" }],
+    ['link', { rel: 'icon', href: '/vue3-scaffolding-tutorial/images/logo.svg' }]
   ],
   plugins: [
     googleAnalyticsPlugin({
       id: 'G-TC06K7PL52'
     }),
+    // docsearchPlugin({
+    //   // 配置项
+    // }),
   ],
   markdown: {
     lineNumbers: true,
   },
   theme: defaultTheme({
-    logo: '/images/logo.png',
+    logo: '/images/logo.svg',
     repo: 'https://github.com/haibin-007/vue3-scaffolding-tutorial',
+    repoLabel: 'Github',
     navbar: [
-      {
-        text: 'Group',
-        children: ['/group/foo.md', '/group/bar.md'],
-      },
       {
         text: "Issue",
         link: "https://github.com/haibin-007/vue3-scaffolding-tutorial/issues",
       },
     ],
+    themePlugins: {
+      activeHeaderLinks: false
+    },
+    editLink: false,
+    lastUpdated: false,
+    contributors: false,
+    tip: '提示',
+    warning: '注意',
+    danger: '警告',
+    toggleColorMode: '切换颜色模式',
+    sidebarDepth: 2,
     sidebar: [
       {
         text: 'markdown',
@@ -42,24 +59,17 @@ export default defineUserConfig({
         text: "介绍",
         collapsible : false,
         children: [
-          "/",
-          "/guide/test1",
-          "/guide/test2"
+          "/introduce/book",
         ],
       },
-      // SidebarItem
       {
-        text: 'Foo',
-        link: '/foo/',
+        text: "基础实践",
+        collapsible : false,
         children: [
-          // SidebarItem
-          {
-            text: 'github',
-            link: 'https://github.com',
-            children: [],
-          },
-          // 字符串 - 页面文件路径
-          '/foo/bar.md',
+          "/guide/getting-started",
+          "/guide/README_md",
+          "/guide/package_json",
+          "/guide/待整理",
         ],
       },
     ],

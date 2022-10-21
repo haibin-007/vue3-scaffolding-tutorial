@@ -351,39 +351,193 @@ module.exports = {
 
 ![](./prettier_eslint01.png)
 
-## Babel
-到这里得开始关注自身代码的需求了，大多数项目最基础也需要使用到ES6语法了。虽然目前有好一部分浏览器都支持，但是难免会有某些不支持的情况，最好的做法全部转成**ES5**再给浏览器解析。
+## ----Prettier & Webpack
 
-我们选择目前非常热门的ES编译器`Babel`来进行转换
+
+
+## Babel
+到这里得开始关注自身代码的需求了，大多数项目最基础也需要使用到ES6语法了。虽然目前有好一部分浏览器都支持，但是难免会有某些不支持的情况，最好的做法全部转成`ES5`再给浏览器解析。
+
+我们选择目前非常热门的ES编译器`Babel`来进行转换，需要安装`@babel/core`和`@babel/preset-env`两个插件和创建`babel.config.js`配置文件。
 
 ```shell
 npm i -D @babel/core @babel/preset-env 
 ```
-
-## Babel & Webpack
-配置好babel后还需要借助Webpack来进行构建转换。
-
-
-
-## Babel & ESLint
-
-
-可以根据配置文件来配置解析器   创建`.babelrc.js`配置文件
 ```js
-// .babelrc.js
+// babel.config.js
 module.exports = {
   presets: [
     [
-      '@babel/preset-env', // ES6
+      "@babel/preset-env", // ES6
       {
         targets: {
-          browsers: ['> 1%', 'last 2 versions', 'not dead', 'not ie 11'],
+          browsers: ["> 0.25%", "not dead"],
         },
       },
-    ]
+    ],
+  ],
+};
+```
+
+## Babel & Webpack
+配置好babel后还需要借助Webpack来对js文件进行构建转换，需要安装`babel-loader`来配置。
+```shell
+npm i -D babel-loader
+```
+
+```js {15-25}
+// webpack.base.js
+module.exports = {
+  entry: {
+    index: path.resolve(__dirname, "../src/index.js"),
+  },
+  output: {
+    path: path.resolve(__dirname, "../dist"),
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, "../public/index.html"),
+      favicon: path.resolve(__dirname, "../public/logo.svg"),
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        },
+      },
+    ],
+  },
+};
+```
+这样一来`babel-loader`就会自动使用`babel.config.js`的配置了，我们添加ES6语法验证一下。
+```js {11}
+// src/index.js
+console.log("hello world!");
+const test = 123;
+console.log(test);
+
+let a = 1;
+const b = 2;
+const c = 333;
+console.log("result", a, b, c);
+
+console.log([1, 2, 3].map((n) => n + 1)); // 使用ES6箭头函数
+```
+接着执行`npm run build`看看构建结果
+
+![](./babel01.png)
+
+可以看到成功将`ES6的箭头函数`转换成`ES5的匿名函数`。
+
+## Babel & ESLint
+前面可以知道我们能够使用哪种版本的ES6语法取决于babel的配置，但有没想过那eslint检查的是哪个版本的ES6语法？
+
+如果版本不一致，可能会导致`babel支持`某个ES6语法而`eslint不支持`时反而出现报错的情况。
+
+例如下面使用ES2021的语法ESLint就会提示解析错误：
+```js {13-15}
+// src/index.js
+console.log("hello world!");
+const test = 123;
+console.log(test);
+
+let a = 1;
+const b = 2;
+const c = 333;
+console.log("result", a, b, c);
+
+console.log([1, 2, 3].map((n) => n + 1));
+
+let d = null;
+d ||= "daotin";
+console.log(d);
+```
+
+![](./babel02.png)
+
+下面我们再看看构建会不会有问题：
+```shell
+npm run build
+```
+
+![](./babel03.png)
+
+可以看出来webpack通过babel的配置一样能够转换ES2021的语法，主要原因是在于`@babel/preset-env`默认就是支持最新的ES语法。
+
+![](./babel04.png)
+
+而ESLint会报错的原因是在于我们配置的是ES6版本的语法，也就是2015的版本。
+
+![](./babel05.png)
+
+这个时候可以通过配置`es2021`来支持这个版本的语法：
+```js {6}
+// .eslintrc.js
+module.exports = {
+  env: {
+    browser: true,  // 支持浏览器环境
+    node: true,     // 识别 CommonJS
+    es2021: true,   // 识别 ES 的代码
+  },
+  // 继承ESLint的规则集
+  extends: [
+    "eslint:recommended",           // ESLint自带
+    "plugin:prettier/recommended"   // Prettier
   ]
 };
 ```
+但是这样还是没办法完全避免版本不一致的问题，最好的方法还是两者使用同一种配置，所以我们需要用到插件`@babel/eslint-parser`来解决这个问题。
+```shell
+npm i -D @babel/eslint-parser
+```
+```js {13-28}
+// .eslintrc.js
+module.exports = {
+  env: {
+    browser: true,  // 支持浏览器环境
+    node: true,     // 识别 CommonJS
+    es2021: true,   // 识别 ES 的代码
+  },
+  // 继承ESLint的规则集
+  extends: [
+    "eslint:recommended",           // ESLint自带
+    "plugin:prettier/recommended"   // Prettier
+  ],
+  overrides: [
+    {
+      files: ["**/*.{js,jsx}"],          // 只处理 js 和 jsx 文件
+      parser: "@babel/eslint-parser",    // 使用 babel 来解析 js 文件
+      parserOptions: {
+        sourceType: "module",            // 支持 import/export
+        allowImportExportEverywhere: false,
+        ecmaFeatures: {
+          globalReturn: false,
+        },
+        babelOptions: {
+          configFile: './babel.config.js', // 指定babel配置文件
+        },
+      },
+    }
+  ]
+};
+```
+这样一来就可以用一个`babel.config.js`文件来配置`Webpack`的构建和`ESLint`的代码检查了。
+
+
+## TypeScript
+
+## TypeScirpt & ESLint
+
+
+## TypeScript & Webpack
+
+
+
+
 
 
 

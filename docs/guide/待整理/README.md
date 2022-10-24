@@ -208,6 +208,10 @@ console.log(test);
 
 那这个痛点我们该怎么来解决呢？
 
+## ----ESLint & Webpack
+https://zhuanlan.zhihu.com/p/347103745
+
+
 
 ## Prettier
 这个痛点能够使用Prettier来解决，Prettier是通过结合eslint的规则来进行修复。
@@ -368,7 +372,7 @@ npm i -D @babel/core @babel/preset-env
 module.exports = {
   presets: [
     [
-      "@babel/preset-env", // ES6
+      "@babel/preset-env", // ES
       {
         targets: {
           browsers: ["> 0.25%", "not dead"],
@@ -529,18 +533,214 @@ module.exports = {
 
 
 ## TypeScript
+通过前面的`babel`配置，终于可以肆意使用最新版的ES语法了。但是如今大部分企业实际上都在使用`TypeScript`了，而且对代码的可维护性、壮健性都有很大的提升。  
+所以我们这里也需要对`TypeScript`也做下支持，首先通过命令创建`tsconfig.json`配置文件。
+```shell
+# 创建tsconfig.json
+npx tsc --init
+```
+```json
+// 修改tsconfig.json
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "useDefineForClassFields": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "alwaysStrict": true,
+    "skipLibCheck": true
+  }
+}
+```
+创建个TS文件试试：
+```ts
+// src/index.ts
+interface Test {
+  a: number;
+  b: string;
+}
+
+const test: Test = {
+  a: 111,
+  b: "111",
+};
+
+console.log(test);
+```
+
+![](./typescript01.png)
+
+结果ESLint这边解析出了问题，那后面我们加上ESLint的检测吧。
 
 ## TypeScirpt & ESLint
-
+首先得安装相应的三个插件`typescript`、`@typescript-eslint/parser`、`@typescript-eslint/eslint-plugin`。
+```shell
+npm install -D 
+  typescript # TypeScript
+  @typescript-eslint/parser # TypeScript 解析器
+  @typescript-eslint/eslint-plugin # TypeScript 规则集和插件功能
+```
+再来修改ESLint配置文件
+```js {6-17}
+// .eslintrc.js
+module.exports = {
+  ...
+  overrides: [
+    ...
+    {
+      files: ["**/*.{ts,tsx}"],              // 只处理 ts 和 tsx 文件
+      parser: "@typescript-eslint/parser",   // 解析 TypeScript
+      parserOptions: {
+        project: ["./tsconfig.json"],        // 指定ts配置文件
+      },
+      extends: [
+        "plugin:@typescript-eslint/recommended",                          // 官方语法检查
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",  // 类型检查
+      ],
+      plugins: ["@typescript-eslint"],
+    }
+  ]
+};
+```
+这下你会发现之前`src/index.ts`的ESLint报错提示消失了。
 
 ## TypeScript & Webpack
+现在光能用`TypeScript`写代码还不行，还得让`Webpack`支持TS转JS才行。  
+之前我们ES6转ES5时是让`Webpack`通过`Babel`配置来转换，这次`TypeScript`也可以通过`Babel`配置给`Webpack`转换。
+```shell
+npm i -D @babel/preset-typescript
+```
+```js {12-14}
+// babel.config.js
+module.exports = {
+  presets: [
+    [
+      "@babel/preset-env", // ES
+      {
+        targets: {
+          browsers: ["> 0.25%", "not dead"],
+        },
+      },
+    ],
+    [
+      "@babel/preset-typescript", // TS
+    ],
+  ],
+};
+```
+对应的`Webpack配置入口`和`babel-loader解析后缀`都需要修改。
+```js {7,21}
+// webpack.base.js
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+module.exports = {
+  entry: {
+    index: path.resolve(__dirname, "../src/index.ts"),
+  },
+  output: {
+    path: path.resolve(__dirname, "../dist"),
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, "../public/index.html"),
+      favicon: path.resolve(__dirname, "../public/logo.svg"),
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.(js|ts)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        },
+      },
+    ],
+  },
+};
+```
+到这里再去执行`npm run build`就会发现构建没有问题了。  
+
+前面使用`@babel/preset-typescript`进行转换的方式的优点在于**构建效率快**，但缺点是**缺少类型检查**。  
+为了兼容不同的使用人群，这边也介绍下使用`ts-loader`的方式，优点是**具有类型检查**，缺点则是**构建效率较慢**。
+
+```shell
+npm i -D ts-loader
+```
+```js {28-32}
+// webpack.base.js
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+module.exports = {
+  entry: {
+    index: path.resolve(__dirname, "../src/index.ts"),
+  },
+  output: {
+    path: path.resolve(__dirname, "../dist"),
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, "../public/index.html"),
+      favicon: path.resolve(__dirname, "../public/logo.svg"),
+    }),
+  ],
+  module: {
+    rules: [
+      {
+        // test: /\.(js|ts)$/,
+        test: /\.(js)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        },
+      },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
+};
+```
+```shell
+npm run dev # 构建看看效果
+```
+这个时候我们再尝试写下错误的类型，就会看到终端会出现报错信息。
+```ts {5}
+// src/index.ts
+interface Test {
+  a: number;
+  b: string;
+  c: string;
+}
+
+const test: Test = {
+  a: 111,
+  b: "111",
+};
+
+console.log(test);
+```
+
+![](./typescript02.png)
+
+最后总结下，这里我们介绍了两种方式来转换TS：
+- `@babel/preset-typescript` 这种方式的好处在于**构建效率快**，但缺点是**缺少类型检查**。
+- `ts-loader` 这种方式的优点是构建时会**类型检查**，但**构建效率慢**。
+
+具体使用哪种方式来转换TS，就看个人的取舍了，这里不做推荐。
 
 
-
-
-
-
-
+## ----
 
 
 

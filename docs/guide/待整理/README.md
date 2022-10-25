@@ -4,19 +4,6 @@ title: 待整理
 
 # 待整理
 
-## .gitignore的来源及作用
-
-
-## 创建.gitignore
-github官方提供了不同环境下的[.gitignore模板集合](https://github.com/github/gitignore)  
-我们这里直接使用提供的`Node.gitignore`即可。
-
-
-
-
-
-
-
 ## 构建工具的选择
 既然是企业级脚手架，那么肯定得选择比较成熟且稳定的工具。  
 目前市场上比较合适的选项有：webpack、rollup、gulp
@@ -674,7 +661,7 @@ module.exports = {
 ```shell
 npm i -D ts-loader
 ```
-```js {28-32}
+```js {28-34}
 // webpack.base.js
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -704,8 +691,11 @@ module.exports = {
       },
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        loader: 'ts-loader',
         exclude: /node_modules/,
+        options: {
+          configFile: path.resolve(process.cwd(), 'tsconfig.json')
+        },
       },
     ],
   },
@@ -735,19 +725,223 @@ console.log(test);
 
 最后总结下，这里我们介绍了两种方式来转换TS：
 - `@babel/preset-typescript` 这种方式的好处在于**构建效率快**，但缺点是**缺少类型检查**。
-- `ts-loader` 这种方式的优点是构建时会**类型检查**，但**构建效率慢**。
-
+- `ts-loader` 这种方式的优点是构建时会**进行类型检查**，但**构建效率慢**。
+::: tip
+本项目使用的是`ts-loader`
+:::
 具体使用哪种方式来转换TS，就看个人的取舍了，这里不做推荐。
 
 
-## ----
 
-
-
-
-由于某些情况下window配置环境变量会出现问题，保险起见我们也安装下cross-env，它主要是支持跨平台运行设置和使用环境变量的脚本。
-
+## Vue
+现在我们开始来针对Vue做配置了，先来安装Vue。
 ```shell
-npm i -D cross-env
-
+npm i -S vue
 ```
+::: tip
+我们这里使用的`vue`版本为`v3.2.41`
+:::
+然后模仿`Vue-Cli`新建一个`App.vue`文件，在`index.ts`配置初始化Vue实例，以及在`public/index.html`配置绑定节点。
+```vue
+<!-- src/App.vue -->
+<template>
+  <section class='app'>
+    {{text}}
+  </section>
+</template>
+<script lang='ts' setup>
+import { ref } from "vue";
+const text = ref("hello world!");
+</script>
+
+<style lang='scss' scoped>
+.app {
+  color: red;
+}
+</style>
+```
+```ts {14-17}
+// src/index.ts
+interface Test {
+  a: number;
+  b: string;
+}
+
+const test: Test = {
+  a: 111,
+  b: "111",
+};
+
+console.log(test);
+
+import { createApp } from "vue";
+import App from "./App.vue";
+const app = createApp(App);
+app.mount("#app");
+```
+```html {11}
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vue3-scaffolding-tutorial-example</title>
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
+```
+
+## Vue & ESLint
+
+![](./vue01.png)
+
+在`src/App.vue`可以看到`ESLint`还无法识别`vue`的写法规则，所以还需要要配置下`ESLint`。
+
+先来安装对应插件`eslint-plugin-vue`和`vue-eslint-parser`：
+```shell
+npm i -D eslint-plugin-vue vue-eslint-parser
+```
+- `eslint-plugin-vue` 针对vue文件的规则和插件
+- `vue-eslint-parser` 让ESLint识别vue文件
+接着来配置ESLint
+```js {6-10}
+// ./eslintrc.js
+module.exports = {
+  ...
+  overrides: [
+    ...
+    {
+      files: ["**/*.vue"],                    // 只处理 vue 文件
+      parser: "vue-eslint-parser",            // 解析Vue
+      extends: ["plugin:vue/vue3-essential"], // 使用vue3的推荐规则
+    }
+  ]
+};
+```
+## Vue & TypeScript
+
+![](./vue02.png)
+
+在`src/index.ts`可以看到`TypeScript`还无法识别`vue`组件类型，所以还需要**手动**新建文件`src/@types/shims-vue.d.ts`给`vue`文件声明下类型。
+
+```ts
+// src/@types/shims-vue.d.ts
+declare module "*.vue" {
+  import { ComponentOptions } from "vue";
+  const componentOptions: ComponentOptions;
+  export default componentOptions;
+}
+```
+接着执行`npm run dev`看下效果：
+
+![](./vue03.png)
+
+报错信息可以看出还缺少`loader`来转换`vue`文件类型，下一节我们来配置`Webpack`。
+
+## Vue & Webpack
+
+先安装对应插件`vue-loader`、`vue-template-compiler`。
+```shell 
+npm i -D vue-loader vue-template-compiler
+```
+- `vue-template-compiler` 将`vue模板`预编译成`render函数`。
+- `vue-loader` 结合`vue-template-compiler`将`vue文件`转换为`js文本`。
+
+接着配置`Webpack`文件:
+```js {14,17-20}
+// webpack.base.js
+...
+module.exports = {
+  ...
+  module: {
+    rules: [
+      ...
+      {
+        test: /\.tsx?$/,
+        loader: 'ts-loader',
+        exclude: /node_modules/,
+        options: {
+          configFile: path.resolve(process.cwd(), 'tsconfig.json'),
+          appendTsSuffixTo: [/\.vue$/]  // vue内部使用ts
+        },
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+      }
+    ],
+  },
+};
+```
+
+由于我们使用了`Sass`，这里还得安装针对`Sass`的`Webpack`插件：
+```shell
+npm i -D vue-style-loader css-loader
+npm i -D sass-loader node-sass 
+```
+```js {8-15}
+// webpack.base.js
+...
+module.exports = {
+  ...
+  module: {
+    rules: [
+      ...
+      {
+        test: /\.scss$/,
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          'sass-loader'
+        ]
+      }
+    ],
+  },
+};
+```
+执行`npm run dev`看看效果
+
+![](./vue04.png)
+
+这个报错的原因是由于`vue-loader`未提供具体类型给`TypeScript`导致的，`vue-loader`版本为`v17.0.0`。目前[`Issues`](https://github.com/vuejs/vue-loader/issues/1915)还未有官方答复，我们暂时通过`ignoreDiagnostics`来解决：
+
+```js {15}
+// webpack.base.js
+...
+module.exports = {
+  ...
+  module: {
+    rules: [
+      ...
+      {
+        test: /\.tsx?$/,
+        loader: 'ts-loader',
+        exclude: /node_modules/,
+        options: {
+          configFile: path.resolve(process.cwd(), 'tsconfig.json'),
+          appendTsSuffixTo: [/\.vue$/],  // vue内部使用ts
+          ignoreDiagnostics: [7006]  // 针对vue-loader的bug
+        },
+      },
+      ...
+    ],
+  },
+};
+```
+
+这时再执行构建就会看到预期的效果：
+```shell
+npm run dev
+# or
+npm run build
+http-server dist
+```
+
+![](./vue05.png)
+
+
+## 未完待续...

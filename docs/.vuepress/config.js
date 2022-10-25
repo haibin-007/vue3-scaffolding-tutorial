@@ -50,11 +50,11 @@ export default defineUserConfig({
     toggleColorMode: '切换颜色模式',
     sidebarDepth: 2,
     sidebar: [
-      {
-        text: 'markdown',
-        collapsible : false,
-        children: ['/markdown.md']
-      },
+      // {
+      //   text: 'markdown',
+      //   collapsible : false,
+      //   children: ['/markdown.md']
+      // },
       {
         text: "介绍",
         collapsible : false,
@@ -67,11 +67,10 @@ export default defineUserConfig({
         collapsible : false,
         children: [
           "/guide/getting-started",
-          "/guide/README_md",
           "/guide/package_json",
-          "/guide/待整理",
         ],
       },
+      "/guide/待整理"
     ],
   }),
 })

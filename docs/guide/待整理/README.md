@@ -944,4 +944,134 @@ http-server dist
 ![](./vue05.png)
 
 
+
+## CSS方案的选择
+
+单纯地使用css来书写样式有一系列的缺点，比如`选择器同名导致样式覆盖`、`样式规则重复率高`、`书写效率低`等。
+
+目前前端领域比较知名的方案有三类：
+- `CSS模块化` 通过CSS-in-JS的方式来嵌入样式，能够非常灵活地使用CSS，但上手成本较高。
+- `CSS原子化` 极大化地减少样式地重复率，也可以提高书写效率，但缺点也非常明显，就是可读性极差，也有一定的上手成本。
+- `CSS预处理器` 通过预处理器提高书写效率，也能更好地管理css规则，上手成本基本没有。
+
+这里有一张图可以充分说明它们的特点：
+
+![](./css01.png)
+
+不太推荐使用`CSS-in-JS`这种方式，写css还需要另外学对应API，本身就是一种本末倒置的方式，并且写法上也并没有提高多少效率。
+
+反观`CSS原子化`是一个极度追求书写效率的方式，也极大地提高了复用性，但是可读性太差了，不利于维护。下面给张图大家感受下：
+
+![](./css02.png)
+
+当然不可否认，这种方式能够极大地提高效率，可以在一些敏捷开发的场景可以用用，但是在中大型项目还是不太推荐。  
+
+最后这里推荐使用`CSS预处理器`，灵活度也高，复用性可以自己配置，上手成本也低。
+
+
+## CSS预处理器
+
+目前市面上比较知名的`CSS预处理器`有三种：
+- `Sass` 2007年诞生，最早也是最成熟的CSS预处理器，拥有ruby社区的支持和compass这一最强大的css框架，目前受LESS影响，已经进化到了全面兼容CSS的SCSS。
+- `Less` 2009年出现，受SASS的影响较大，但又使用CSS的语法，让大部分开发者和设计师更容易上手，在ruby社区之外支持者远超过SASS，其缺点是比起SASS来，可编程功能不够，不过优点是简单和兼容CSS，反过来也影响了SASS演变到了SCSS的时代，著名的Twitter Bootstrap就是采用LESS做底层语言的。
+- `Stylus` 2010年产生，来自Node.js社区，主要用来给Node项目进行CSS预处理支持，在此社区之内有一定支持者，在广泛的意义上人气还完全不如SASS和LESS。
+
+上面是这三类预处理器的介绍，这里不做推荐，可以根据个人喜好选择。
+
+::: tip
+本项目使用的`CSS预处理器`为`Sass`
+:::
+
+
+## Sass & Webpack
+在前面我们已经在`Webpack`配置了`sass-loader`，接着我们需要使用Sass全局配置，以便于使用Sass Mixin、Sass Variables等特性。
+
+先创建一个样式文件`src/assets/css/variables.scss`，以及给`src/App.vue`添加上样式。
+```scss
+// src/assets/css/variables.scss
+@charset "UTF-8";
+$color1: green;
+
+@mixin size($size){
+	font-size: $size;
+}
+
+// src/App.vue
+.app {
+  color: $color1;
+  @include size(20px);
+}
+```
+
+再来修改`Webpack`的配置，让它在全局中引入。
+```js {4-9,19-24}
+// webpack/webpack.base.js
+module.exports = {
+  ...
+  resolve: {
+    alias: {
+      // 添加别名，可以简写
+      '@': path.resolve(__dirname, '../src'),
+    }
+  },
+  ...
+  module: {
+    rules: [
+      ...
+      {
+        test: /\.scss$/,
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              additionalData: `@import "@/assets/css/variables";`,
+            },
+          },
+        ]
+      }
+    ],
+  },
+};
+```
+这时我们再执行`npm run dev`就可以看到已经生效了：
+
+![](./css03.png)
+
+
+## Pnpm
+
+![](./pnpm02.png)
+
+之前我们用的包管理器是NPM，但是具有诸多的缺点：
+- `重复依赖` 项目依赖a和b，同时a和b都依赖c，那么会导致安装两个c分别在a和b的目录下。
+- `幽灵依赖` 项目依赖a，a依赖b，但未限制项目直接使用b。（升级a可能会删除b，不应该让项目直接使用b）
+- `算法耗时长` 由于使用的是嵌套结构，需要使用算法来进行扁平化，导致耗时更长。
+- ...
+
+尤其是项目功能非常复杂的时候，一旦要删除`node_modules`或者`npm install`那就会花费大量实际在**等待**，特别是在屡次安装删除失败的时候累计起来耗时就不是一点半点了。
+
+![](./pnpm03.png)
+
+而`pnpm`使用的是另外一套管理依赖包的方法，使用`软链`来进行管理，速度会更快。简单地说，就是它会将依赖包存放在统一的位置，通过软链来映射，不同版本则只会保存有区别的文件。  
+
+下面可以看看对比图：
+
+![](./pnpm01.png)
+
+使用`pnpm`也很简单，先全局安装`pnpm`包。
+```shell
+npm install -g pnpm
+```
+接着只需要稍微改变下使用方式即可：
+| npm命令 | pnpm命令 |
+| :--- | :--- |
+| npm install | `pnpm install` |
+| npm install ... | `pnpm add ...` |
+| npm run ...	| `pnpm ...` | 
+
+
+
+
 ## 未完待续...

@@ -63,7 +63,7 @@ export default defineUserConfig({
         ],
       },
       {
-        text: "起步",
+        text: "基础架构",
         collapsible : false,
         children: [
           "/guide/getting-started",

@@ -1,26 +1,9 @@
-// 颜色
-// $accentColor: #924058;
-// $textColor: #2c3e50;
-// $borderColor: #eaecef;
-// $codeBgColor: #282c34;
-// $arrowBgColor: #ccc;
-
-
-// 布局
-// $navbarHeight: 3.6rem;
-// $sidebarWidth: 20rem;
-// $contentWidth: 740px;
-// $homePageWidth: 960px;
-
-
-// .navbar .logo {
-//   margin-right: 0;
-// }
-
 
 :root {
   // brand colors
+  // --c-brand: #3eaf7c;
   --c-brand: #3eaf7c;
+
   --c-brand-light: #4abf8a;
 
   // background colors
@@ -44,17 +27,17 @@
   --c-border-dark: #dfe2e5;
 
   // custom container colors
-  --c-tip: #42b983;   // #924058
+  --c-tip: #42b983;
   --c-tip-bg: var(--c-bg-light);
   --c-tip-title: var(--c-text);
   --c-tip-text: var(--c-text);
   --c-tip-text-accent: var(--c-text-accent);
-  --c-warning: #e7c000;  // darken(#ffe564, 35%)
+  --c-warning: #e7c000;
   --c-warning-bg: #fffae3;
   --c-warning-title: #ad9000;
   --c-warning-text: #746000;
   --c-warning-text-accent: var(--c-text);
-  --c-danger: #cc0000;  // #DA5961
+  --c-danger: #cc0000;
   --c-danger-bg: #ffe0e0;
   --c-danger-title: #990000;
   --c-danger-text: #660000;
@@ -65,8 +48,6 @@
   --c-badge-tip: var(--c-tip);
   --c-badge-warning: var(--c-warning);
   --c-badge-danger: var(--c-danger);
-
-
 
   // transition vars
   --t-color: 0.3s ease;
@@ -153,8 +134,6 @@
   --search-item-text-color: var(--c-text-lighter);
   --search-item-focus-bg-color: var(--c-bg-light);
 }
-
-
 
 
 

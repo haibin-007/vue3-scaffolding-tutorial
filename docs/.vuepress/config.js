@@ -15,7 +15,7 @@ export default defineUserConfig({
   head: [
     ["meta", { name: "keywords", content: "vue3, 脚手架" }],
     ["meta", { name: "author", content: "haibin" }],
-    ['link', { rel: 'icon', href: '/vue3-scaffolding-tutorial/images/logo.svg' }]
+    ['link', { rel: 'icon', href: '/vue3-scaffolding-tutorial/images/avatar.png' }]
   ],
   plugins: [
     googleAnalyticsPlugin({
@@ -59,7 +59,7 @@ export default defineUserConfig({
         text: "介绍",
         collapsible : false,
         children: [
-          "/introduce/book",
+          "/",
         ],
       },
       {

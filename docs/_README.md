@@ -2,7 +2,7 @@
 title:
 home: false
 heroImage: /images/logo.svg
-heroText: 从0到1搭建企业级vue3脚手架
+heroText: Vue3脚手架搭建
 tagline: 从“空文件夹”手把手教你搭建企业级vue3脚手架
 actions:
   - text: 快速实践

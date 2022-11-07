@@ -10,7 +10,7 @@ export default defineUserConfig({
   open: false,
   base: '/vue3-scaffolding-tutorial/',
   lang: 'zh-CN',
-  title: '从0到1搭建企业级vue3脚手架',
+  title: 'Vue3脚手架搭建',
   description: '从“空文件夹”手把手教你搭建企业级vue3脚手架',
   head: [
     ["meta", { name: "keywords", content: "vue3, 脚手架" }],

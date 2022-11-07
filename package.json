@@ -1,7 +1,7 @@
 {
   "name": "vue3-scaffolding-tutorial",
   "version": "1.0.0",
-  "description": "从0到1搭建企业级vue3脚手架",
+  "description": "Vue3脚手架搭建",
   "main": "index.js",
   "scripts": {
     "docs:dev": "vuepress dev docs",

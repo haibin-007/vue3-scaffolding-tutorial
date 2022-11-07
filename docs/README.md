@@ -2,6 +2,7 @@
 title: 小书介绍
 ---
 
+<img src="./%E4%B9%A6%E5%B0%81%E9%9D%A2.png" style="width: 300px;margin-top: 30px;" />
 
 # 小书介绍
 

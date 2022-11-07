@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-6d11b7fd","path":"/guide/18.Vue&Webpack/","title":"Vue & Webpack","lang":"zh-CN","frontmatter":{"title":"Vue & Webpack"},"excerpt":"","headers":[],"git":{},"filePathRelative":"guide/18.Vue&Webpack/README.md"}');export{e as data};

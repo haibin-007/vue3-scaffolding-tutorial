@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-18fb5fe0","path":"/guide/06.Prettier/","title":"Prettier","lang":"zh-CN","frontmatter":{"title":"Prettier"},"excerpt":"","headers":[],"git":{},"filePathRelative":"guide/06.Prettier/README.md"}');export{e as data};

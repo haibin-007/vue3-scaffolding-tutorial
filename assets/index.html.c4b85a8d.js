@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-4be96100","path":"/guide/11.Babel&ESLint/","title":"Babel & ESLint","lang":"zh-CN","frontmatter":{"title":"Babel & ESLint"},"excerpt":"","headers":[],"git":{},"filePathRelative":"guide/11.Babel&ESLint/README.md"}');export{e as data};

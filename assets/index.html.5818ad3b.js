@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-7293ca80","path":"/guide/04.Webpack/","title":"Webpack","lang":"zh-CN","frontmatter":{"title":"Webpack"},"excerpt":"","headers":[],"git":{},"filePathRelative":"guide/04.Webpack/README.md"}');export{e as data};

@@ -2,9 +2,15 @@ import { defineUserConfig } from 'vuepress'
 import { defaultTheme } from '@vuepress/theme-default'
 import { googleAnalyticsPlugin } from '@vuepress/plugin-google-analytics'
 import { docsearchPlugin } from '@vuepress/plugin-docsearch'
+import { getDirname, path } from '@vuepress/utils'
+
+const __dirname = getDirname(import.meta.url)
 
 
 export default defineUserConfig({
+  alias: {
+    '@alias': path.resolve(__dirname, '../guide/01 getting-started'),
+  },
   host: '0.0.0.0',
   port: 8080,
   open: false,
@@ -66,28 +72,28 @@ export default defineUserConfig({
         text: "基础架构",
         collapsible : false,
         children: [
-          "/guide/01 getting-started",
-          "/guide/02 package_json",
-          "/guide/03 构建工具的选择",
-          "/guide/04 Webpack",
-          "/guide/05 ESLint",
-          "/guide/06 Prettier",
-          "/guide/07 ESLint & Prettier",
-          "/guide/08 Webpack & ESLint",
-          "/guide/09 Babel",
-          "/guide/10 Babel & Webpack",
-          "/guide/11 Babel & ESLint",
-          "/guide/12 TypeScript",
-          "/guide/13 TypeScript & ESLint",
-          "/guide/14 TypeScript & Webpack",
-          "/guide/15 Vue",
-          "/guide/16 Vue & ESLint",
-          "/guide/17 Vue & TypeScript",
-          "/guide/18 Vue & Webpack",
-          "/guide/19 CSS方案的选择",
-          "/guide/20 CSS预处理器",
-          "/guide/21 Sass & Webpack",
-          "/guide/22 Pnpm",
+          "/guide/01.getting-started",
+          "/guide/02.package_json",
+          "/guide/03.构建工具的选择",
+          "/guide/04.Webpack",
+          "/guide/05.ESLint",
+          "/guide/06.Prettier",
+          "/guide/07.ESLint&Prettier",
+          "/guide/08.Webpack&ESLint",
+          "/guide/09.Babel",
+          "/guide/10.Babel&Webpack",
+          "/guide/11.Babel&ESLint",
+          "/guide/12.TypeScript",
+          "/guide/13.TypeScript&ESLint",
+          "/guide/14.TypeScript&Webpack",
+          "/guide/15.Vue",
+          "/guide/16.Vue&ESLint",
+          "/guide/17.Vue&TypeScript",
+          "/guide/18.Vue&Webpack",
+          "/guide/19.CSS方案的选择",
+          "/guide/20.CSS预处理器",
+          "/guide/21.Sass&Webpack",
+          "/guide/22.Pnpm",
           "/guide/未完待续",
         ],
       }

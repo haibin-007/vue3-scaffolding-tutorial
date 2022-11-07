@@ -14,11 +14,11 @@ title: package.json
 - 去 Underscore官网 下载Underscore  
 - ...
 
-![Isaac Z. Schlueter](./Isaac-Z.-Schlueter.png)
+![Isaac Z. Schlueter](./IsaacZSchlueter.png)
 
 有些程序员就受不鸟了，一个拥有三大美德的程序员 **Isaac Z. Schlueter** （上图）给出一个解决方案：用一个工具把这些代码集中到一起来进行管理。
 
-![Ryan Dahl](./Ryan-Dahl.png)
+![Ryan Dahl](./RyanDahl.png)
 
 后面跟Node.js的作者**Ryan Dahl**（上图）合作，成为Node.js内置的包管理器。
 

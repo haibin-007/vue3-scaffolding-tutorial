@@ -1,6 +1,6 @@
 # vue3-scaffolding-tutorial
 
-<img src="./book.png" style="width: 300px;margin-top: 30px;" />
+<img src="./docs/book.png" style="width: 300px;margin-top: 30px;" />
 
 # 小书介绍
 

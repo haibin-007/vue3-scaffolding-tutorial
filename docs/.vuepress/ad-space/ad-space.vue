@@ -14,7 +14,7 @@
           :href="item.url"
           target="_blank"
         >
-          <img :src="`/images/${item.logo}.svg`" alt="" srcset="">
+          <img :src="withBase(`/images/${item.logo}.svg`)" alt="" srcset="">
           {{item.title}}
         </a>
         <div v-if="!item.demo" class="sponsors-bottom">
@@ -27,6 +27,7 @@
 </template>
 <script lang='ts' setup>
   import { ref, reactive } from 'vue'
+  import { withBase } from '@vuepress/client'
   const show = ref(true)
   const sponsors = reactive([{
     title: 'Vue.js',
